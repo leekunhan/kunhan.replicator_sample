@@ -50,50 +50,48 @@ class Replicator:
         rotation_min = self.rotation.min_value
         rotation_max = self.rotation.max_value
         use_rotation = self.rotation.is_checked
+        _num = self.max_exces.get_value_as_int()
 
         path_list = [path.strip() for path in _object.split(',')]
-        object_group = rep.get.prim_at_path(path = path_list)
-        with rep.trigger.on_frame(rt_subframes = 32):
-            with object_group:
-                if use_position:
-                    _position = rep.distribution.uniform(lower=position_min, upper=position_max)
-                else:
-                    _position = None
-                    carb.log_info("No change position value")
-                if use_rotation:
-                    _rotation = rep.distribution.uniform(lower=rotation_min, upper=rotation_max)
-                else:
-                    _rotation = None
-                    carb.log_info("No change rotation value")
-                rep.modify.pose(position = _position, rotation = _rotation)
+        
+        with rep.new_layer("Randomizer"):
+            with rep.trigger.on_frame(rt_subframes = 32, max_execs = _num):
+                object_group = rep.get.prim_at_path(path = path_list)
+                with object_group:
+                    if use_position:
+                        _position = rep.distribution.uniform(lower=position_min, upper=position_max)
+                    else:
+                        _position = None
+                        carb.log_info("No change position value")
+                    if use_rotation:
+                        _rotation = rep.distribution.uniform(lower=rotation_min, upper=rotation_max)
+                    else:
+                        _rotation = None
+                        carb.log_info("No change rotation value")
+                    rep.modify.pose(position = _position, rotation = _rotation)
 
     def replicator_writer(self):
         annotators_kwargs = {}
         for i, _ in enumerate(self.writer_option):
             if self.annotations[i].is_checked:
                 annotators_kwargs[self.writer_option[i]] = True
-        _num = self.max_exces.get_value_as_int()
         render_product = self.camera.render_product
         output_dir = self.export_dir.directory
 
-        writer = rep.writers.get("BasicWriter")
-        writer.initialize(output_dir = output_dir, **annotators_kwargs)
-        writer.attach(render_product)
-
-        print(f"annotators_kwargs = {annotators_kwargs}")
-        print(f"output_dir = {output_dir}")
-        print(f"render_product = {render_product}")
-        print(f"render_product_type = {type(render_product)}")
-        print(f"num = {_num}")
-
-        # with rep.new_layer("Randomizer"):
-        #     rep_run(num=_num)
-
+        with rep.new_layer("Writer"):
+            writer = rep.writers.get("BasicWriter")
+            writer.initialize(output_dir = output_dir, **annotators_kwargs)
+            writer.attach(render_product)
+        
+        rep.orchestrator.run()
 
     def reset(self):
         remove_replicator_scope()
         remove_replicator_graph("Shape")
         remove_replicator_graph("USD")
+        remove_replicator_graph("Randomizer")
+        remove_replicator_graph("Camera")
+        remove_replicator_graph("Writer")
 
     def build_replicator_controls(self):
         with self._build_collapse_base("Create"):
@@ -121,7 +119,6 @@ class Replicator:
                                                                                                                        semantic_label = usd_dir_semantic._get_semantic_label(),
                                                                                                                         count = usd_dir_semantic._get_count()
                                                                                                                         ))
-
         with self._build_collapse_base("Randomizer"):
             with ui.VStack():
                 self.get_path = PathModel(label="Get Path from Stage")
@@ -131,6 +128,9 @@ class Replicator:
                             self.position = MinMax3fModel(label="Position")
                         with self._build_collapse_base("Rotation"):
                             self.rotation = MinMax3fModel(label="Rotation")
+                with ui.HStack():
+                    ui.Label("trigger on Frame num   =   ", width=ui.Percent(30))
+                    ui.IntField(model=self.max_exces)
                 with ui.HStack():
                     ui.Spacer(width = ui.Percent(90))
                     ui.Button("Register", width=0, clicked_fn=lambda: self.register_randomizer())
@@ -144,9 +144,6 @@ class Replicator:
                     for i in self.writer_option:
                         checkbox = CheckboxModel(name=i)
                         self.annotations.append(checkbox)
-                with ui.HStack():
-                    ui.Label("trigger on Frame num   =   ", width=ui.Percent(30))
-                    ui.IntField(model=self.max_exces)
 
                 self.export_dir = CustomExportDirModel(label="Export Directory",
                                                         file_types = [
@@ -154,26 +151,9 @@ class Replicator:
                                                         tooltip="Directory to export images")
                 with ui.HStack():
                     ui.Spacer(width=ui.Percent(70))
-                    ui.Button("Preview", width = ui.Percent(10), clicked_fn = rep_preview)
-                    ui.Button("Stop", width = ui.Percent(10), clicked_fn = rep_stop)
+                    ui.Button("Preview", width = ui.Percent(10), clicked_fn = lambda: rep.orchestrator.preview())
+                    ui.Button("Stop", width = ui.Percent(10), clicked_fn = lambda: rep.orchestrator.stop())
                     ui.Button("Run", width = ui.Percent(10), clicked_fn = self.replicator_writer)
 
         with ui.HStack():
             ui.Button("Reset", width=ui.Percent(10), height=0, clicked_fn=self.reset)
-
-# import omni.replicator.core as rep
-
-# with rep.new_layer():
-# 	camera = rep.create.camera()
-# 	render_product = rep.create.render_product(camera, (1920, 1080))
-
-# 	writer = rep.writers.get("BasicWriter")
-# 	writer.initialize(output_dir = "C:/Users/ryan0511/Downloads/test_replicator/", rgb = True)
-# 	writer.attach(render_product)
-
-# 	object_group = rep.get.prim_at_path (path = "/World/Cube")
-
-# 	with rep.trigger.on_frame(max_execs=30):
-# 	   with object_group:
-# 	       mod = rep.modify.pose(position=rep.distribution.uniform((-500., -500., -500.), (500., 500., 500.)))
-# rep.orchestrator.run()

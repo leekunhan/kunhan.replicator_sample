@@ -248,6 +248,7 @@ class CameraModel():
         self.camera_name = ui.SimpleStringModel("Camera")
         self.resolution_x = ui.SimpleIntModel(1920)
         self.resolution_y = ui.SimpleIntModel(1080)
+        self.render_product = None
         self._build_camera()
 
     def _build_camera(self):
@@ -266,4 +267,3 @@ class CameraModel():
                 name=self.camera_name.get_value_as_string(),)
             self.render_product = rep.create.render_product(camera, resolution=(self.res_x.model.as_int,
                                                                            self.res_y.model.as_int))
-
