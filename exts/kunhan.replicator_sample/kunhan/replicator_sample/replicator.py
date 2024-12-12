@@ -99,12 +99,13 @@ class Replicator:
                 ui.Label("Create Prim Using Replicator", height=20)
                 with self._build_collapse_base("Shape", collapsed=False):
                     with ui.HStack():
-                        shape = ComboboxModel(options = self.shape_option)
+                        shape = ComboboxModel(options = self.shape_option, tooltip="Select shape to create")
                         shape_semantic = SemanticModel()
-                        ui.Button("Create", width = ui.Percent(15), clicked_fn = lambda: self.create_shape(prim_type=shape._get_combo_selection(),
-                                                                                   semantic_label = shape_semantic._get_semantic_label(),
-                                                                                   count = shape_semantic._get_count()
-                                                                                   ))
+                        ui.Button("Create", width = ui.Percent(15),tooltip = "click to create the shape",  
+                        clicked_fn = lambda: self.create_shape(prim_type=shape._get_combo_selection(),
+                                                                semantic_label = shape_semantic._get_semantic_label(),
+                                                                count = shape_semantic._get_count()
+                                                                ))
                 with self._build_collapse_base("From USD Path", collapsed=False):
                     with ui.VStack():
                         with ui.HStack():
@@ -115,13 +116,13 @@ class Replicator:
                                                                     ("*.usdc", "USD Binary File")],
                                                             tooltip="Directory to import USD files")
                             usd_dir_semantic = SemanticModel(default_label = "usd_dir")
-                            ui.Button("Create", width = ui.Percent(15), clicked_fn = lambda: self.create_prim_from_usd(prim_path = usd_dir.directory,
+                            ui.Button("Create", width = ui.Percent(15),tooltip = "click to create prim from usd", clicked_fn = lambda: self.create_prim_from_usd(prim_path = usd_dir.directory,
                                                                                                                        semantic_label = usd_dir_semantic._get_semantic_label(),
                                                                                                                         count = usd_dir_semantic._get_count()
                                                                                                                         ))
         with self._build_collapse_base("Randomizer"):
             with ui.VStack():
-                self.get_path = PathModel(label="Get Path from Stage")
+                self.get_path = PathModel(label="Get Path from Stage", tooltip="Get path from stage to randomize")
                 with self._build_collapse_base("Modify"):
                     with ui.HStack():
                         with self._build_collapse_base("Position"):
@@ -130,10 +131,10 @@ class Replicator:
                             self.rotation = MinMax3fModel(label="Rotation")
                 with ui.HStack():
                     ui.Label("trigger on Frame num   =   ", width=ui.Percent(30))
-                    ui.IntField(model=self.max_exces)
+                    ui.IntField(model=self.max_exces, tooltip = "Number of frame to trigger")
                 with ui.HStack():
                     ui.Spacer(width = ui.Percent(90))
-                    ui.Button("Register", width=0, clicked_fn=lambda: self.register_randomizer())
+                    ui.Button("Register", width=0, clicked_fn=lambda: self.register_randomizer(), tooltip = "trigger randomizer")
 
         with self._build_collapse_base("Writer"):
             with ui.VStack():

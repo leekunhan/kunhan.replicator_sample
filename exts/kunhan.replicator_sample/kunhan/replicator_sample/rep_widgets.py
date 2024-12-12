@@ -8,8 +8,8 @@ from typing import List
 import omni.replicator.core as rep
 
 class ComboboxModel():
-    def __init__(self, options: list):
-        self.combobox = ui.ComboBox(width = ui.Percent(15))
+    def __init__(self, options: list, tooltip: str):
+        self.combobox = ui.ComboBox(width = ui.Percent(15), tooltip = tooltip)
         self.options = options
         self._build_combobox()
 
@@ -254,12 +254,12 @@ class CameraModel():
     def _build_camera(self):
         with ui.HStack():
             ui.Label("Camera Name")
-            ui.StringField(model=self.camera_name)
+            ui.StringField(model=self.camera_name, tooltip = "camear name")
             ui.Label("Resolution X")
-            self.res_x = ui.IntField(model=self.resolution_x)
+            self.res_x = ui.IntField(model=self.resolution_x, tooltip = "Resolution X")
             ui.Label("Resolution Y")
-            self.res_y = ui.IntField(model=self.resolution_y)
-            ui.Button("Create Camera", clicked_fn=self.create_camera)
+            self.res_y = ui.IntField(model=self.resolution_y, tooltip = "Resolution Y")
+            ui.Button("Create Camera", clicked_fn=self.create_camera, tooltip = "Click will Create Camera with new layer")
 
     def create_camera(self):
         with rep.new_layer("Camera"):

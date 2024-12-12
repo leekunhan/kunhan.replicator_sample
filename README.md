@@ -1,52 +1,107 @@
-# Extension Project Template
+# Replicator Sample Extension
+*Dynamic Shape Creation and Randomization for Omniverse Projects*
 
-This project was automatically generated.
+---
 
-- `app` - It is a folder link to the location of your *Omniverse Kit* based app.
-- `exts` - It is a folder where you can add new extensions. It was automatically added to extension search path. (Extension Manager -> Gear Icon -> Extension Search Path).
+## Overview
+The Replicator Sample Extension provides a robust interface to create, randomize, and manage 3D primitives or imported USD models in the NVIDIA Omniverse. Users can define object semantics, apply randomized transformations, and generate synthetic data with Replicator functionality. This extension is highly customizable and includes support for annotators, camera creation, and output configuration.
 
-Open this folder using Visual Studio Code. It will suggest you to install few extensions that will make python experience better.
+---
 
-Look for "kunhan.replicator_sample" extension in extension manager and enable it. Try applying changes to any python files, it will hot-reload and you can observe results immediately.
+## UI Overview
 
-Alternatively, you can launch your app from console with this folder added to search path and your extension enabled, e.g.:
+### **Create**
+The **Create** section allows users to generate primitives or load USD files as objects in the scene, with configurable semantics and counts.
 
-```
-> app\omni.code.bat --ext-folder exts --enable company.hello.world
-```
+#### Shape Creation:
+- Select from predefined shapes (cube, sphere, etc.).
+- Assign semantic labels.
+- Specify the number of instances to generate.
 
-# App Link Setup
+Example:
+- **Shape**: Cube
+- **Semantic Label**: Obstacle
+- **Count**: 10
 
-If `app` folder link doesn't exist or broken it can be created again. For better developer experience it is recommended to create a folder link named `app` to the *Omniverse Kit* app installed from *Omniverse Launcher*. Convenience script to use is included.
+Result: Creates 10 cubes with the semantic label `Obstacle`.
 
-Run:
+#### USD Import:
+- Import a USD file and assign it a semantic label and count.
 
-```
-> link_app.bat
-```
+Example:
+- **USD File**: `models/robot.usd`
+- **Semantic Label**: Robot
+- **Count**: 5
 
-If successful you should see `app` folder link in the root of this repo.
+Result: Creates 5 instances of the USD model with the semantic label `Robot`.
 
-If multiple Omniverse apps is installed script will select recommended one. Or you can explicitly pass an app:
+---
 
-```
-> link_app.bat --app create
-```
+### **Randomizer**
+The **Randomizer** section introduces random transformations to existing objects.
 
-You can also just pass a path to create link to:
+- **Path Selector**: Choose object paths from the stage.
+- **Position Randomization**: Apply a uniform distribution within defined ranges for X, Y, and Z coordinates.
+- **Rotation Randomization**: Apply a uniform distribution for rotation angles on X, Y, and Z axes.
 
-```
-> link_app.bat --path "C:/Users/bob/AppData/Local/ov/pkg/create-2021.3.4"
-```
+Example Configurations:
+- **Position Min**: (-10, -10, 0)
+- **Position Max**: (10, 10, 5)
+- **Rotation Min**: (0, 0, 0)
+- **Rotation Max**: (360, 360, 0)
 
+Click **Register** to apply these transformations to the selected objects.
 
-# Sharing Your Extensions
+---
 
-This folder is ready to be pushed to any git repository. Once pushed direct link to a git repository can be added to *Omniverse Kit* extension search paths.
+### **Writer**
+The **Writer** section enables users to define output settings for synthetic data generation.
 
-Link might look like this: `git://github.com/[user]/[your_repo].git?branch=main&dir=exts`
+- **Annotators**: Select data to export (e.g., RGB, bounding boxes, segmentation).
+- **Output Directory**: Specify where data files will be stored.
+- **Preview/Run Controls**:
+  - **Preview**: Test configurations without writing data.
+  - **Run**: Generate and export data files for each frame.
 
-Notice `exts` is repo subfolder with extensions. More information can be found in "Git URL as Extension Search Paths" section of developers manual.
+---
 
-To add a link to your *Omniverse Kit* based app go into: Extension Manager -> Gear Icon -> Extension Search Path
+### **Camera**
+The **Camera** section allows for camera creation and configuration:
 
+- **Name**: Assign a unique name for the camera.
+- **Resolution**: Define the X and Y resolution.
+- **Render Product**: Generate a camera render product for annotations and data generation.
+
+Example Configuration:
+- **Camera Name**: `MainCamera`
+- **Resolution**: 1920 x 1080
+
+Click **Create Camera** to add the camera to the scene.
+
+---
+
+### **Reset**
+Click the **Reset** button to remove all Replicator graphs and clear the current session.
+
+---
+
+## Technical Features
+
+1. **Shape Options**:
+   - Cube, Sphere, Cylinder, Cone, Torus, Plane.
+
+2. **Transformations**:
+   - Randomized position and rotation.
+
+3. **USD Support**:
+   - Load models directly from `.usd`, `.usda`, or `.usdc` files.
+
+4. **Annotations**:
+   - Options: RGB, bounding boxes, semantic segmentation, instance segmentation, normals.
+
+5. **Camera Integration**:
+   - Directly link the camera to synthetic data generation pipelines.
+
+---
+
+This extension provides a versatile toolset for creating dynamic environments, perfect for machine learning, simulation, and virtual world generation.
